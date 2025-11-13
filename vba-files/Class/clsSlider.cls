@@ -60,16 +60,16 @@ Private mLabelValue As MSForms.Label
 Public Event Click(ByRef control As Object, ByRef Value As Single)
 Public Event Change(ByRef control As Object, ByRef Value As Single)
 
-Private mNameLabel  As String
-Private mFormatValue As String
-Private mValue      As Single
-Private mMaxValue   As Single
-Private mMinValue   As Single
-Private snMin       As Single
-Private snMax       As Single
-Private mIsHorizontal As Boolean
-Private mLocked     As Boolean
-Private mPositionValue As PositionValue
+Private mNameLabel  As String      ' Name of the main slider label
+Private mFormatValue As String     ' Format for displaying the value
+Private mValue      As Single      ' Current slider value
+Private mMaxValue   As Single      ' Maximum slider value
+Private mMinValue   As Single      ' Minimum slider value
+Private mSliderMinPos As Single    ' Minimum slider position
+Private mSliderMaxPos As Single    ' Maximum slider position
+Private mIsHorizontal As Boolean   ' Flag for horizontal orientation
+Private mLocked     As Boolean     ' Flag for locking the slider
+Private mPositionValue As PositionValue  ' Position of the value label
 
 Public Property Get Version() As String
     Version = "Class: clsSlider" & vbNewLine & _
@@ -78,7 +78,7 @@ Public Property Get Version() As String
             "Date of creation: 13.11.2025 10:59" & vbNewLine & _
             "Date of update: 13.11.2025 15:57" & vbNewLine & _
             "License: Apache" & vbNewLine & _
-            "Description:"
+            "Description: Custom slider control for VBA UserForms with horizontal/vertical orientation support"
 End Property
 
 Public Property Get Locked() As Boolean
@@ -227,6 +227,16 @@ Public Sub Initialize(ByRef labelSlider As MSForms.Label, _
         Optional ForeColorValue As XlRgbColor = rgbBlack, _
         Optional Icon As Long = 59963)
 
+    ' Check if the value range is valid
+    If MinValue >= MaxValue Then
+        Err.Raise vbObjectError + 1001, "clsSlider", "Minimum value must be less than maximum value"
+    End If
+
+    ' Check if the initial value is within the range
+    If Value < MinValue Or Value > MaxValue Then
+        Err.Raise vbObjectError + 1002, "clsSlider", "Initial value must be within the MinValue..MaxValue range"
+    End If
+
     Set mLabelLineEmpty = labelSlider
     mValue = Value
     mMaxValue = MaxValue
@@ -238,12 +248,12 @@ Public Sub Initialize(ByRef labelSlider As MSForms.Label, _
         mIsHorizontal = .Width / .Height > 1
         If mIsHorizontal Then
             .Height = 3
-            snMin = .Left
-            snMax = snMin + .Width
+            mSliderMinPos = .Left
+            mSliderMaxPos = mSliderMinPos + .Width
         Else
             .Width = 3
-            snMin = .Top
-            snMax = snMin + .Height
+            mSliderMinPos = .Top
+            mSliderMaxPos = mSliderMinPos + .Height
         End If
         .Caption = vbNullString
         mNameLabel = .Name
@@ -285,11 +295,13 @@ Public Sub Initialize(ByRef labelSlider As MSForms.Label, _
     Call SetValue(mValue)
 End Sub
 
+' Click event handler for the slider button
 Private Sub mLabelBtn_Click()
     If mLocked Then Exit Sub
     RaiseEvent Click(mLabelBtn, mValue)
 End Sub
 
+' MouseUp event handler for the slider
 Private Sub mLabelBtn_MouseUp(ByVal Button As Integer, ByVal Shift As Integer, ByVal x As Single, ByVal y As Single)
     If Button <> 1 Or mLocked Then Exit Sub
     With mLabelBtn
@@ -301,17 +313,18 @@ Private Sub mLabelBtn_MouseUp(ByVal Button As Integer, ByVal Shift As Integer, B
     End With
 End Sub
 
+' MouseMove event handler for the slider
 Private Sub mLabelBtn_MouseMove(ByVal Button As Integer, ByVal Shift As Integer, ByVal x As Single, ByVal y As Single)
     If Button <> 1 Or mLocked Then Exit Sub
     With mLabelBtn
         If mIsHorizontal Then
             Select Case .Left + x
-                Case snMin - 0.5 To snMax + 0.5:
+                Case mSliderMinPos - 0.5 To mSliderMaxPos + 0.5:
                     .Left = .Left + x
                     Select Case mLabelBtn.Left + x
-                        Case Is < snMin
+                        Case Is < mSliderMinPos
                             mLabelLineFull.Width = 0
-                        Case Is > snMax
+                        Case Is > mSliderMaxPos
                             mLabelLineFull.Width = mLabelLineEmpty.Width
                         Case Else
                             If mLabelLineFull.Width + x < 0 Then
@@ -323,12 +336,12 @@ Private Sub mLabelBtn_MouseMove(ByVal Button As Integer, ByVal Shift As Integer,
             End Select
         Else
             Select Case .Top + y
-                Case snMin - 0.5 To snMax + 0.5:
+                Case mSliderMinPos - 0.5 To mSliderMaxPos + 0.5:
                     .Top = .Top + y
                     Select Case mLabelBtn.Top + y
-                        Case Is < snMin
+                        Case Is < mSliderMinPos
                             mLabelLineFull.Height = 0
-                        Case Is > snMax
+                        Case Is > mSliderMaxPos
                             mLabelLineFull.Height = mLabelLineEmpty.Height
                         Case Else
                             If mLabelLineFull.Height + y < 0 Then
@@ -348,7 +361,15 @@ Private Sub mLabelBtn_MouseMove(ByVal Button As Integer, ByVal Shift As Integer,
     RaiseEvent Change(mLabelBtn, mValue)
 End Sub
 
+' Calculates the current slider value based on the slider position and value range
 Private Function getValue() As Single
+    ' Проверка деления на ноль
+    If mLabelLineEmpty.Width = 0 Or mLabelLineEmpty.Height = 0 Then
+        getValue = mMinValue
+        mValue = getValue
+        Exit Function
+    End If
+    
     If mIsHorizontal Then
         getValue = mMinValue + mLabelLineFull.Width / mLabelLineEmpty.Width * (mMaxValue - mMinValue)
     Else
@@ -362,14 +383,25 @@ Private Function getValue() As Single
     mValue = getValue
 End Function
 
+' Sets the slider value and updates the position of the controls
 Private Sub SetValue(ByRef snValue As Single)
     mValue = snValue
     With mLabelLineFull
         If mIsHorizontal Then
             .Height = mLabelLineEmpty.Height
-            .Width = (mValue - mMinValue) / (mMaxValue - mMinValue) * mLabelLineEmpty.Width
+            ' Проверка деления на ноль
+            If mMaxValue <> mMinValue Then
+                .Width = (mValue - mMinValue) / (mMaxValue - mMinValue) * mLabelLineEmpty.Width
+            Else
+                .Width = 0
+            End If
         Else
-            .Height = (mValue - mMinValue) / (mMaxValue - mMinValue) * mLabelLineEmpty.Height
+            ' Проверка деления на ноль
+            If mMaxValue <> mMinValue Then
+                .Height = (mValue - mMinValue) / (mMaxValue - mMinValue) * mLabelLineEmpty.Height
+            Else
+                .Height = 0
+            End If
             .Width = mLabelLineEmpty.Width
         End If
     End With
@@ -391,6 +423,7 @@ Private Sub SetValue(ByRef snValue As Single)
     End With
 End Sub
 
+' Changes the position of the slider value label depending on the given position
 Private Sub changePositionLabelValue(ByVal pos As PositionValue)
     With mLabelValue
         Select Case pos

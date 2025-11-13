@@ -14,6 +14,12 @@ Attribute VB_Creatable = False
 Attribute VB_PredeclaredId = True
 Attribute VB_Exposed = False
 
+'* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+'* Module     : frmTestClass
+'* Created    : 13-11-2025 19:40
+'* Author     : VBATools
+'* Copyright  : VBATools
+'* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
 Option Explicit
 
 Private WithEvents clsSL As clsSlider
