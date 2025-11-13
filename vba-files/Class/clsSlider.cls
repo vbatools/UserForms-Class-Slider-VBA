@@ -45,10 +45,10 @@ Option Explicit
 '========================================================================================
 
 Public Enum PositionValue
-    Top = 1
-    Left
-    Right
-    Bottom
+    Top = 1  ' Position of the value label above the slider
+    Left   ' Position of the value label to the left of the slider
+    Right ' Position of the value label to the right of the slider
+    Bottom ' Position of the value label below the slider
 End Enum
 
 Private WithEvents mLabelBtn As MSForms.Label
@@ -72,6 +72,8 @@ Private mLocked     As Boolean     ' Flag for locking the slider
 Private mPositionValue As PositionValue  ' Position of the value label
 
 Public Property Get Version() As String
+    ' Returns version information about the class
+    ' Example: Debug.Print slider.Version
     Version = "Class: clsSlider" & vbNewLine & _
             "Author: VBATools" & vbNewLine & _
             "Version: 1.0.1" & vbNewLine & _
@@ -82,27 +84,45 @@ Public Property Get Version() As String
 End Property
 
 Public Property Get Locked() As Boolean
+    ' Returns the lock state of the slider
+    ' If True, the slider does not respond to user actions
+    ' Example: If slider.Locked Then Debug.Print "Slider is locked"
     Locked = mLocked
 End Property
 
 Public Property Let Locked(ByVal Value As Boolean)
+    ' Sets the lock state of the slider
+    ' When True, the slider does not respond to user actions
+    ' Example: slider.Locked = True
     mLocked = Value
 End Property
 
 Public Property Get Enabled() As Boolean
+    ' Returns the enabled state of the slider
+    ' If False, the slider appears grayed out and does not respond to user actions
+    ' Example: If slider.Enabled Then Debug.Print "Slider is enabled"
     Enabled = mLabelBtn.Enabled
 End Property
 
 Public Property Let Enabled(ByVal Value As Boolean)
+    ' Sets the enabled state of the slider
+    ' When False, the slider appears grayed out and does not respond to user actions
+    ' Example: slider.Enabled = False
     mLabelBtn.Enabled = Value
     mLabelValue.Enabled = Value
 End Property
 
 Public Property Get Visible() As Boolean
+    ' Returns the visibility state of all slider elements
+    ' If False, all slider elements are hidden
+    ' Example: If slider.Visible Then Debug.Print "Slider is visible"
     Visible = mLabelBtn.Visible
 End Property
 
 Public Property Let Visible(ByVal Value As Boolean)
+    ' Sets the visibility state of all slider elements
+    ' When False, all slider elements are hidden
+    ' Example: slider.Visible = False
     mLabelBtn.Visible = Value
     mLabelLineEmpty.Visible = Value
     mLabelLineFull.Visible = Value
@@ -110,35 +130,58 @@ Public Property Let Visible(ByVal Value As Boolean)
 End Property
 
 Public Property Get VisibleLabelValue() As Boolean
+    ' Returns the visibility state of the slider value label
+    ' If False, the value label is not displayed
+    ' Example: If slider.VisibleLabelValue Then Debug.Print "Value label is visible"
     VisibleLabelValue = mLabelValue.Visible
 End Property
 
 Public Property Let VisibleLabelValue(ByVal Value As Boolean)
+    ' Sets the visibility state of the slider value label
+    ' When False, the value label is hidden
+    ' Example: slider.VisibleLabelValue = False
     mLabelValue.Visible = Value
 End Property
 
 Public Property Get Icon() As Long
+    ' Returns the icon on the slider button (as a Unicode character value)
+    ' Example: Dim currentIcon As Long: currentIcon = slider.Icon
     Icon = VBA.CLng(mLabelBtn.Caption)
 End Property
 
 Public Property Let Icon(ByVal Value As Long)
+    ' Sets the icon on the slider button
+    ' Accepts a Unicode character value
+    ' Example: slider.Icon = 59963  (sets an icon from Segoe MDL2 Assets font)
     mLabelBtn.Caption = VBA.ChrW(Value)
 End Property
 
 Public Property Get PositionLabelValue() As PositionValue
+    ' Returns the current position of the slider value label
+    ' Possible values: Top, Left, Right, Bottom
+    ' Example: Dim pos As PositionValue: pos = slider.PositionLabelValue
     PositionLabelValue = mPositionValue
 End Property
 
 Public Property Let PositionLabelValue(ByVal Value As PositionValue)
+    ' Sets the position of the slider value label
+    ' Accepts a value from the PositionValue enumeration (Top, Left, Right, Bottom)
+    ' Example: slider.PositionLabelValue = clsSlider.PositionValue.Right
     mPositionValue = Value
     Call changePositionLabelValue(mPositionValue)
 End Property
 
 Public Property Get FormatValue() As String
+    ' Returns the format for displaying the slider value
+    ' Used to format the numeric value when displayed
+    ' Example: Dim fmt As String: fmt = slider.FormatValue
     FormatValue = mFormatValue
 End Property
 
 Public Property Let FormatValue(ByVal Value As String)
+    ' Sets the format for displaying the slider value
+    ' Accepts a format string similar to that used in the Format function
+    ' Example: slider.FormatValue = "0.00%"  (displays value as percentage)
     mFormatValue = Value
     If mFormatValue <> vbNullString Then
         mLabelValue.Caption = VBA.Format$(getValue(), mFormatValue)
@@ -148,66 +191,100 @@ Public Property Let FormatValue(ByVal Value As String)
 End Property
 
 Public Property Get ForeColorValue() As XlRgbColor
+    ' Returns the text color of the slider value label
+    ' Example: Dim color As XlRgbColor: color = slider.ForeColorValue
     ForeColorValue = mLabelValue.ForeColor
 End Property
 
 Public Property Let ForeColorValue(ByVal Value As XlRgbColor)
+    ' Sets the text color of the slider value label
+    ' Example: slider.ForeColorValue = rgbRed
     mLabelValue.ForeColor = Value
 End Property
 
 Public Property Get ForeColorBtn() As XlRgbColor
+    ' Returns the text color of the slider button
+    ' Example: Dim color As XlRgbColor: color = slider.ForeColorBtn
     ForeColorBtn = mLabelBtn.ForeColor
 End Property
 
 Public Property Let ForeColorBtn(ByVal Value As XlRgbColor)
+    ' Sets the text color of the slider button
+    ' Example: slider.ForeColorBtn = rgbBlue
     mLabelBtn.ForeColor = Value
 End Property
 
 Public Property Get BackColorFull() As XlRgbColor
+    ' Returns the color of the filled part of the slider line
+    ' Example: Dim color As XlRgbColor: color = slider.BackColorFull
     BackColorFull = mLabelLineFull.BackColor
 End Property
 
 Public Property Let BackColorFull(ByVal Value As XlRgbColor)
+    ' Sets the color of the filled part of the slider line
+    ' Example: slider.BackColorFull = rgbGreen
     mLabelLineFull.BackColor = Value
 End Property
 
 Public Property Get BackColorEmpty() As XlRgbColor
+    ' Returns the color of the empty part of the slider line
+    ' Example: Dim color As XlRgbColor: color = slider.BackColorEmpty
     BackColorEmpty = mLabelLineEmpty.BackColor
 End Property
 
 Public Property Let BackColorEmpty(ByVal Value As XlRgbColor)
+    ' Sets the color of the empty part of the slider line
+    ' Example: slider.BackColorEmpty = rgbGray
     mLabelLineEmpty.BackColor = Value
 End Property
 
 Public Property Get Name() As String
+    ' Returns the name of the main slider label
+    ' Example: Dim sliderName As String: sliderName = slider.Name
     Name = mNameLabel
 End Property
 
 Public Property Get IsHorizontal() As Boolean
+    ' Returns whether the slider is horizontal
+    ' True - horizontal, False - vertical
+    ' Example: If slider.IsHorizontal Then Debug.Print "Slider is horizontal"
     IsHorizontal = mIsHorizontal
 End Property
 
 Public Property Get MinValue() As Single
+    ' Returns the minimum value of the slider
+    ' Example: Dim minVal As Single: minVal = slider.MinValue
     MinValue = mMinValue
 End Property
 
 Public Property Let MinValue(ByVal Value As Single)
+    ' Sets the minimum value of the slider
+    ' Example: slider.MinValue = 0
     mMinValue = Value
 End Property
 
 Public Property Get MaxValue() As Single
+    ' Returns the maximum value of the slider
+    ' Example: Dim maxVal As Single: maxVal = slider.MaxValue
     MaxValue = mMaxValue
 End Property
 
 Public Property Let MaxValue(ByVal Value As Single)
+    ' Sets the maximum value of the slider
+    ' Example: slider.MaxValue = 100
     mMaxValue = Value
 End Property
 
 Public Property Get Value() As Single
+    ' Returns the current value of the slider
+    ' Example: Dim currentVal As Single: currentVal = slider.Value
     Value = getValue()
 End Property
 
 Public Property Let Value(ByVal Value As Single)
+    ' Sets the current value of the slider
+    ' The value must be within the range from MinValue to MaxValue
+    ' Example: slider.Value = 50
     Select Case Value
         Case mMinValue To mMaxValue:
             Call SetValue(Value)
@@ -226,7 +303,25 @@ Public Sub Initialize(ByRef labelSlider As MSForms.Label, _
         Optional ForeColorBtn As XlRgbColor = rgbBlack, _
         Optional ForeColorValue As XlRgbColor = rgbBlack, _
         Optional Icon As Long = 59963)
-
+    ' Initializes the slider with specified parameters
+    ' Parameters:
+    ' - labelSlider: the main label that will be used as the empty slider line
+    ' - Value: initial value of the slider
+    ' - MinValue: minimum value of the slider
+    ' - MaxValue: maximum value of the slider
+    ' - VisibleLabelValue: visibility of the value label
+    ' - FormatValue: format for displaying the value (default vbNullString)
+    ' - PositionValue: position of the value label (default Top)
+    ' - BackColorEmpty: color of the empty part of the line (default rgbLightGray)
+    ' - BackColorFull: color of the filled part of the line (default rgbGreenYellow)
+    ' - ForeColorBtn: color of the button (default rgbBlack)
+    ' - ForeColorValue: color of the value (default rgbBlack)
+    ' - Icon: icon on the button (default 59963)
+    '
+    ' Usage example:
+    ' Dim slider As New clsSlider
+    ' Call slider.Initialize(Me.Label1, 50, 0, 100, True, "0.0", clsSlider.PositionValue.Top)
+    '
     ' Check if the value range is valid
     If MinValue >= MaxValue Then
         Err.Raise vbObjectError + 1001, "clsSlider", "Minimum value must be less than maximum value"
@@ -296,12 +391,21 @@ Public Sub Initialize(ByRef labelSlider As MSForms.Label, _
 End Sub
 
 ' Click event handler for the slider button
+' Event handler for the slider button click
+' Raises the Click event, passing a reference to the control and the current value
+' Example usage in a form:
+' Private Sub slider_Click(control As Object, Value As Single)
+'     Debug.Print "Click on control: " & control.Name & ", value: " & Value
+' End Sub
 Private Sub mLabelBtn_Click()
     If mLocked Then Exit Sub
     RaiseEvent Click(mLabelBtn, mValue)
 End Sub
 
 ' MouseUp event handler for the slider
+' Event handler for releasing the mouse button on the slider
+' Updates the button position after dragging is completed
+' Example usage: updating button position when mouse is released
 Private Sub mLabelBtn_MouseUp(ByVal Button As Integer, ByVal Shift As Integer, ByVal x As Single, ByVal y As Single)
     If Button <> 1 Or mLocked Then Exit Sub
     With mLabelBtn
@@ -314,6 +418,13 @@ Private Sub mLabelBtn_MouseUp(ByVal Button As Integer, ByVal Shift As Integer, B
 End Sub
 
 ' MouseMove event handler for the slider
+' Event handler for mouse movement on the slider
+' Updates the button position and slider value during dragging
+' Raises the Change event when the value changes
+' Example usage in a form:
+' Private Sub slider_Change(control As Object, Value As Single)
+'     Debug.Print "Value changed: " & Value
+' End Sub
 Private Sub mLabelBtn_MouseMove(ByVal Button As Integer, ByVal Shift As Integer, ByVal x As Single, ByVal y As Single)
     If Button <> 1 Or mLocked Then Exit Sub
     With mLabelBtn
@@ -362,8 +473,11 @@ Private Sub mLabelBtn_MouseMove(ByVal Button As Integer, ByVal Shift As Integer,
 End Sub
 
 ' Calculates the current slider value based on the slider position and value range
+' Calculates the current slider value based on the position of the thumb and value range
+' Returns a value in the range from MinValue to MaxValue
+' Example usage: Dim currentValue As Single: currentValue = slider.getValue()
 Private Function getValue() As Single
-    ' Проверка деления на ноль
+    ' Check for division by zero
     If mLabelLineEmpty.Width = 0 Or mLabelLineEmpty.Height = 0 Then
         getValue = mMinValue
         mValue = getValue
@@ -384,19 +498,22 @@ Private Function getValue() As Single
 End Function
 
 ' Sets the slider value and updates the position of the controls
+' Sets the slider value and updates the position of the controls
+' Accepts a new value and adjusts the slider control positions accordingly
+' Example usage: Call slider.SetValue(75)
 Private Sub SetValue(ByRef snValue As Single)
     mValue = snValue
     With mLabelLineFull
         If mIsHorizontal Then
             .Height = mLabelLineEmpty.Height
-            ' Проверка деления на ноль
+            ' Check for division by zero
             If mMaxValue <> mMinValue Then
                 .Width = (mValue - mMinValue) / (mMaxValue - mMinValue) * mLabelLineEmpty.Width
             Else
                 .Width = 0
             End If
         Else
-            ' Проверка деления на ноль
+            ' Check for division by zero
             If mMaxValue <> mMinValue Then
                 .Height = (mValue - mMinValue) / (mMaxValue - mMinValue) * mLabelLineEmpty.Height
             Else
@@ -424,6 +541,9 @@ Private Sub SetValue(ByRef snValue As Single)
 End Sub
 
 ' Changes the position of the slider value label depending on the given position
+' Changes the position of the slider value label based on the specified position
+' Accepts a value from the PositionValue enumeration and sets the appropriate label position
+' Example usage: Call slider.changePositionLabelValue(clsSlider.PositionValue.Right)
 Private Sub changePositionLabelValue(ByVal pos As PositionValue)
     With mLabelValue
         Select Case pos
@@ -443,6 +563,8 @@ Private Sub changePositionLabelValue(ByVal pos As PositionValue)
     End With
 End Sub
 
+' Clean up resources when the class object is destroyed
+' Sets all internal objects to Nothing to prevent memory leaks
 Private Sub Class_Terminate()
     Set mLabelBtn = Nothing
     Set mLabelLineEmpty = Nothing
