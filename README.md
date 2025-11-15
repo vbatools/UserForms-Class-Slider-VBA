@@ -1,4 +1,4 @@
-![User Forms Slider Demo](User_Forms.png)
+![User Forms Slider Demo](User_Forms.gif)
 
 # VBA Slider Class
 
