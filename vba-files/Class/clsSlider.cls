@@ -53,6 +53,8 @@ End Enum
 
 Private WithEvents mLabelBtn As MSForms.Label
 Attribute mLabelBtn.VB_VarHelpID = -1
+Private WithEvents mParent As MSForms.UserForm
+Attribute mParent.VB_VarHelpID = -1
 Private mLabelLineEmpty As MSForms.Label
 Private mLabelLineFull As MSForms.Label
 Private mLabelValue As MSForms.Label
@@ -70,6 +72,7 @@ Private mSliderMaxPos As Single    ' Maximum slider position
 Private mIsHorizontal As Boolean   ' Flag for horizontal orientation
 Private mLocked     As Boolean     ' Flag for locking the slider
 Private mPositionValue As PositionValue  ' Position of the value label
+Private mLabelBtnColor As XlRgbColor
 
 Public Property Get Version() As String
     ' Returns version information about the class
@@ -212,6 +215,7 @@ Public Property Let ForeColorBtn(ByVal Value As XlRgbColor)
     ' Sets the text color of the slider button
     ' Example: slider.ForeColorBtn = rgbBlue
     mLabelBtn.ForeColor = Value
+    mLabelBtnColor = Value
 End Property
 
 Public Property Get BackColorFull() As XlRgbColor
@@ -333,11 +337,13 @@ Public Sub Initialize(ByRef labelSlider As MSForms.Label, _
     End If
 
     Set mLabelLineEmpty = labelSlider
+    Set mParent = mLabelLineEmpty.Parent
     mValue = Value
     mMaxValue = MaxValue
     mMinValue = MinValue
     mFormatValue = FormatValue
     mPositionValue = PositionValue
+    mLabelBtnColor = ForeColorBtn
 
     With mLabelLineEmpty
         mIsHorizontal = .Width / .Height > 1
@@ -406,7 +412,7 @@ End Sub
 ' Event handler for releasing the mouse button on the slider
 ' Updates the button position after dragging is completed
 ' Example usage: updating button position when mouse is released
-Private Sub mLabelBtn_MouseUp(ByVal Button As Integer, ByVal Shift As Integer, ByVal x As Single, ByVal y As Single)
+Private Sub mLabelBtn_MouseUp(ByVal Button As Integer, ByVal Shift As Integer, ByVal X As Single, ByVal Y As Single)
     If Button <> 1 Or mLocked Then Exit Sub
     With mLabelBtn
         If mIsHorizontal Then
@@ -417,6 +423,10 @@ Private Sub mLabelBtn_MouseUp(ByVal Button As Integer, ByVal Shift As Integer, B
     End With
 End Sub
 
+Private Sub mParent_MouseMove(ByVal Button As Integer, ByVal Shift As Integer, ByVal X As Single, ByVal Y As Single)
+    Call hoverColor(0)
+End Sub
+
 ' MouseMove event handler for the slider
 ' Event handler for mouse movement on the slider
 ' Updates the button position and slider value during dragging
@@ -425,40 +435,41 @@ End Sub
 ' Private Sub slider_Change(control As Object, Value As Single)
 '     Debug.Print "Value changed: " & Value
 ' End Sub
-Private Sub mLabelBtn_MouseMove(ByVal Button As Integer, ByVal Shift As Integer, ByVal x As Single, ByVal y As Single)
+Private Sub mLabelBtn_MouseMove(ByVal Button As Integer, ByVal Shift As Integer, ByVal X As Single, ByVal Y As Single)
+    Call hoverColor(100)
     If Button <> 1 Or mLocked Then Exit Sub
     With mLabelBtn
         If mIsHorizontal Then
-            Select Case .Left + x
+            Select Case .Left + X
                 Case mSliderMinPos - 0.5 To mSliderMaxPos + 0.5:
-                    .Left = .Left + x
-                    Select Case mLabelBtn.Left + x
+                    .Left = .Left + X
+                    Select Case mLabelBtn.Left + X
                         Case Is < mSliderMinPos
                             mLabelLineFull.Width = 0
                         Case Is > mSliderMaxPos
                             mLabelLineFull.Width = mLabelLineEmpty.Width
                         Case Else
-                            If mLabelLineFull.Width + x < 0 Then
+                            If mLabelLineFull.Width + X < 0 Then
                                 mLabelLineFull.Width = 0
                             Else
-                                mLabelLineFull.Width = mLabelLineFull.Width + x
+                                mLabelLineFull.Width = mLabelLineFull.Width + X
                             End If
                     End Select
             End Select
         Else
-            Select Case .Top + y
+            Select Case .Top + Y
                 Case mSliderMinPos - 0.5 To mSliderMaxPos + 0.5:
-                    .Top = .Top + y
-                    Select Case mLabelBtn.Top + y
+                    .Top = .Top + Y
+                    Select Case mLabelBtn.Top + Y
                         Case Is < mSliderMinPos
                             mLabelLineFull.Height = 0
                         Case Is > mSliderMaxPos
                             mLabelLineFull.Height = mLabelLineEmpty.Height
                         Case Else
-                            If mLabelLineFull.Height + y < 0 Then
+                            If mLabelLineFull.Height + Y < 0 Then
                                 mLabelLineFull.Height = 0
                             Else
-                                mLabelLineFull.Height = mLabelLineFull.Height + y
+                                mLabelLineFull.Height = mLabelLineFull.Height + Y
                             End If
                     End Select
             End Select
@@ -470,6 +481,10 @@ Private Sub mLabelBtn_MouseMove(ByVal Button As Integer, ByVal Shift As Integer,
         mLabelValue.Caption = VBA.Format$(getValue(), mFormatValue)
     End If
     RaiseEvent Change(mLabelBtn, mValue)
+End Sub
+
+Private Sub hoverColor(ByVal shade As Byte)
+   mLabelBtn.ForeColor = mLabelBtnColor + shade
 End Sub
 
 ' Calculates the current slider value based on the slider position and value range
@@ -570,4 +585,5 @@ Private Sub Class_Terminate()
     Set mLabelLineEmpty = Nothing
     Set mLabelLineFull = Nothing
     Set mLabelValue = Nothing
+    Set mParent = Nothing
 End Sub
