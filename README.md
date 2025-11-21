@@ -1,6 +1,6 @@
 # VBA Slider Class
 
-![User Forms Slider Demo](User_Forms.gif)
+![Project Demo](User_Forms.gif)
 
 This repository contains a VBA implementation of a customizable slider control that can be used in Excel UserForms. The slider class provides a more flexible and feature-rich alternative to the standard scrollbar control.
 
@@ -9,14 +9,10 @@ This repository contains a VBA implementation of a customizable slider control t
 2. [Components](#components)
 3. [Installation](#installation)
 4. [Quick Start](#quick-start)
-5. [Main Features](#main-features)
+5. [Main Functions](#main-functions)
 6. [Working with Controls](#working-with-controls)
 7. [Style Configuration](#style-configuration)
-8. [Creating Toggle Switches](#creating-toggle-switches)
-9. [Adding Icons](#adding-icons)
-10. [Working with Style Collection](#working-with-style-collection)
-11. [Troubleshooting](#troubleshooting)
-12. [FAQ](#faq)
+8. [Troubleshooting](#troubleshooting)
 
 ## Features
 
@@ -39,19 +35,19 @@ This repository contains a VBA implementation of a customizable slider control t
 ## Components
 
 - `clsSlider.cls`: The main slider class implementation
-- `frmTestClass.frm`: Test form demonstrating slider usage
+- `frmTestClass.frm`: Test form demonstrating usage
 - `modShowForms.bas`: Module containing form display functions
 - Documentation in the `docs/` folder:
-  - [`docs/technical_documentation_eng.md`](docs/technical_documentation_eng.md) - Technical documentation in English
-  - [`docs/technical_documentation_rus.md`](docs/technical_documentation_rus.md) - Technical documentation in Russian
-  - [`docs/user_guide_eng.md`](docs/user_guide_eng.md) - User guide in English
+ - [`docs/technical_documentation_eng.md`](docs/technical_documentation_eng.md) - Technical documentation in English
+ - [`docs/technical_documentation_rus.md`](docs/technical_documentation_rus.md) - Technical documentation in Russian
+ - [`docs/user_guide_eng.md`](docs/user_guide_eng.md) - User guide in English
   - [`docs/user_guide_rus.md`](docs/user_guide_rus.md) - User guide in Russian
   - [`docs/implementation_examples_eng.md`](docs/implementation_examples_eng.md) - Implementation examples in English
-  - [`docs/implementation_examples_rus.md`](docs/implementation_examples_rus.md) - Implementation examples in Russian
+ - [`docs/implementation_examples_rus.md`](docs/implementation_examples_rus.md) - Implementation examples in Russian
 
 ## Installation
 
-1. Open the `slider_v2.xlsm` workbook in Excel
+1. Open the `slider_v4.xlsm` workbook in Excel
 2. Import the VBA files into your project:
    - `vba-files/Class/clsSlider.cls`
    - `vba-files/Form/frmTestClass.frm`
@@ -59,15 +55,6 @@ This repository contains a VBA implementation of a customizable slider control t
 3. Start using the slider class in your forms
 
 ## Quick Start
-
-To use the slider in your UserForm:
-
-1. Create an instance of the clsSlider class
-2. Initialize it with your UserForm and desired parameters
-3. Set properties like min/max values, step size, and appearance
-4. Handle the ValueChanged event to respond to user interactions
-
-See the `frmTestClass` form for a complete example implementation.
 
 ### Simple Usage Example
 ```vba
@@ -83,121 +70,35 @@ Private Sub UserForm_Initialize()
 End Sub
 ```
 
-## Main Features
+## Main Functions
 
-### Slider Initialization
-The `Initialize` method is the main way to set up the slider:
-- Sets the initial value, minimum and maximum values
-- Configures appearance properties
-- Sets up event handlers for interaction
-- Creates value label if enabled
-
-### Supported Orientations
-- Horizontal - slider moves left and right
-- Vertical - slider moves up and down
-- Automatic detection based on control dimensions
+- **Slider Initialization**: The `Initialize` method allows setting the initial value, minimum and maximum values, and configuring appearance
+- **Range Management**: Ability to configure minimum and maximum values
+- **Orientation Configuration**: Support for horizontal and vertical orientations
+- **Event Handling**: Support for value change and click events
+- **Smooth Updates**: Visual representation of value changes
 
 ## Working with Controls
 
-### Slider Configuration
-For sliders, the class automatically:
-- Applies the specified value range
-- Creates a movable button element
-- Shows a value label with positioning options
-- Provides visual feedback during interaction
-- Handles mouse events for dragging
-
-### Value Range
-The class allows configuring:
-- Minimum and maximum values
-- Initial value
-- Value display format
-- Position of the value label
-
-### Event Handling
-The class provides events for:
-- Value changes during interaction
-- Click events on the slider button
-- Visual feedback during dragging
+The `clsSlider` class uses a Label control as the slider track with capabilities:
+- Setting initial value
+- Configuring minimum and maximum values
+- Handling drag events
+- Displaying value label with customizable positions
 
 ## Style Configuration
 
-### Color Schemes
-The class provides extensive color configuration options:
+The class allows customization of:
 - Track colors (empty/filled portions)
-- Button colors
+- Slider button colors
 - Value label colors
 - Background colors
+- Fonts and text sizes
 
-### Configuration via Initialize Method
-Colors can be configured during initialization:
+Example of color configuration:
 ```vba
-Slider.Initialize Me.Label1, 50, 0, 100, True, , , RGB(200, 200, 200), RGB(0, 100, 200)
-```
-
-### Dynamic Configuration
-After initialization, you can change properties:
-```vba
-With Slider
-    .BackColorFull = RGB(255, 0, 0)
-    .ForeColorValue = RGB(0, 0, 255)
-End With
-```
-
-### Font Configuration
-The class allows:
-- Setting font size for value labels
-- Configuring font properties via `FormatValue` property
-
-## Creating Toggle Switches
-
-The `clsSlider` class does not implement toggle switches directly. For toggle switches, consider using the `clsMultiStateCheckBox` class with the SWITCH tag property.
-
-## Adding Icons
-
-### Using Built-in Icons
-The slider class uses icons primarily for the slider button:
-- Customizable button appearance
-- Unicode character support
-- Font configuration for icons
-
-### Setting Icons
-To customize the slider button:
-1. In the Initialize method, specify the Icon parameter
-2. Or programmatically:
-```vba
-Slider.Icon = 59963  ' Using numeric value for icon
-```
-
-### Icon Configuration
-- Icons are displayed using the Segoe MDL2 Assets font by default
-- Icon color changes depending on the slider state
-- Icons automatically scale to the button size
-
-## Working with Style Collection
-
-### Accessing Individual Elements
-After initialization, the slider provides access to its elements:
-```vba
-' Getting slider properties
-Dim currentValue As Single
-currentValue = Slider.Value
-```
-
-### Getting the Number of Elements
-The slider class manages a single control element, but provides access to its properties.
-
-### Iterating Through All Elements
-The slider class focuses on a single control, so iteration is not typically necessary.
-
-### Changing Properties of Individual Elements
-```vba
-' Changing slider properties
-With Slider
-    .Value = 75
-    .MinValue = 0
-    .MaxValue = 100
-End With
+' Configure colors during initialization
+Slider.Initialize Me.Label1, 50, 0, 100, True, , RGB(200, 200, 200), RGB(0, 100, 200)
 ```
 
 ## Troubleshooting
@@ -212,39 +113,6 @@ End With
 - Ensure control properties are not changed manually while the class is running
 - Verify that the class is not initialized multiple times
 
-### Performance Issues
-- Reduce the complexity of value formatting
-- Avoid frequent calls to property getters during interaction
-- Use visibility and availability properties appropriately
-
-### Common Errors
-- "Object variable not set" - ensure the class variable is properly initialized
-- "Method or data member not found" - check that the class is properly imported
-- "Can't assign to property" - avoid direct assignment to nested objects without checking for Nothing
-
-## FAQ
-
-### Question: How to change colors after initialization?
-**Answer:** Use the properties of the slider instance to change colors after initialization.
-
-### Question: Are all control types supported?
-**Answer:** The class specifically supports slider functionality using Label controls as tracks.
-
-### Question: Can multiple class instances be used?
-**Answer:** Yes, you can create multiple class instances for different sliders, but each instance manages a single slider control.
-
-### Question: How to add custom icons?
-**Answer:** The class uses Unicode character values for icons. For custom icons, you can use different character codes or consider using image controls.
-
-### Question: Is the class compatible with different Excel versions?
-**Answer:** The class is tested with Excel 2010 and newer. Compatibility with earlier versions is not guaranteed.
-
-### Question: Can animation be configured?
-**Answer:** The current version provides smooth value transition during dragging, but direct animation configuration is not available.
-
-### Question: How to handle events of slider elements?
-**Answer:** The class provides Click and value change events that can be handled in the form module.
-
 ## License
 
-This project is licensed under the terms found in the LICENSE file.
+This project is licensed under the Apache License 2.0 - see the [LICENSE](LICENSE) file for details.
