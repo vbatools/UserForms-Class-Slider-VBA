@@ -1,13 +1,9 @@
-# VBA Slider Class
-
-![User Forms Slider Demo](User_Forms.gif)
-
-This repository contains a VBA implementation of a customizable slider control that can be used in Excel UserForms. The slider class provides a more flexible and feature-rich alternative to the standard scrollbar control.
+# User Guide for clsSlider
 
 ## Table of Contents
-1. [Features](#features)
-2. [Components](#components)
-3. [Installation](#installation)
+1. [Introduction](#introduction)
+2. [System Requirements](#system-requirements)
+3. [Installation and Setup](#installation-and-setup)
 4. [Quick Start](#quick-start)
 5. [Main Features](#main-features)
 6. [Working with Controls](#working-with-controls)
@@ -16,70 +12,66 @@ This repository contains a VBA implementation of a customizable slider control t
 9. [Adding Icons](#adding-icons)
 10. [Working with Style Collection](#working-with-style-collection)
 11. [Troubleshooting](#troubleshooting)
-12. [FAQ](#faq)
+12. [Frequently Asked Questions](#frequently-asked-questions)
 
-## Features
+## Introduction
 
-- Customizable slider appearance (size, colors, orientation)
-- Support for both horizontal and vertical orientations
-- Adjustable minimum and maximum values
-- Step size control for precise value selection
-- Event handling for value changes
-- Smooth visual updates
-- Three-state functionality (unchecked, checked, indeterminate)
-- Cyclic/non-cyclic state switching
-- Ability to set/get state by text
-- Method to get all available states
-- Improved error handling and validation
-- Ability to set font name and size factor
-- Ability to get/set current icon
-- Method to set color for specific state
-- Method to reset to initial state
+The `clsSlider` class implements a custom slider control for VBA UserForms. The slider allows users to select a value within a specified range by dragging a button along a track. It supports both horizontal and vertical orientations and provides customizable appearance and behavior options.
 
-## Components
+### What This Project Can Do:
+- Apply modern design to slider controls
+- Provide smooth value selection with visual feedback
+- Configure colors and fonts for sliders
+- Add icons and visual elements
+- Manage visibility and state of slider controls
 
-- `clsSlider.cls`: The main slider class implementation
-- `frmTestClass.frm`: Test form demonstrating slider usage
-- `modShowForms.bas`: Module containing form display functions
-- Documentation in the `docs/` folder:
-  - [`docs/technical_documentation_eng.md`](docs/technical_documentation_eng.md) - Technical documentation in English
-  - [`docs/technical_documentation_rus.md`](docs/technical_documentation_rus.md) - Technical documentation in Russian
-  - [`docs/user_guide_eng.md`](docs/user_guide_eng.md) - User guide in English
-  - [`docs/user_guide_rus.md`](docs/user_guide_rus.md) - User guide in Russian
-  - [`docs/implementation_examples_eng.md`](docs/implementation_examples_eng.md) - Implementation examples in English
-  - [`docs/implementation_examples_rus.md`](docs/implementation_examples_rus.md) - Implementation examples in Russian
+## System Requirements
 
-## Installation
+- Microsoft Excel (2010 or newer recommended)
+- VBA support enabled
+- Microsoft Forms 2.0 Object Library
+- Windows 7 or newer
 
-1. Open the `slider_v2.xlsm` workbook in Excel
-2. Import the VBA files into your project:
-   - `vba-files/Class/clsSlider.cls`
-   - `vba-files/Form/frmTestClass.frm`
-   - `vba-files/Module/modShowForms.bas`
-3. Start using the slider class in your forms
+## Installation and Setup
+
+### Step 1: Import the Class
+1. Open Excel and go to the VBA editor (press Alt+F11)
+2. In the menu, select "File" > "Import File"
+3. Select the `clsSlider.cls` file from the `vba-files/Class/` directory
+4. Click "Open" to import the class
+
+### Step 2: Configure References
+1. In the VBA editor, select "Tools" > "References"
+2. Find and check the box next to "Microsoft Forms 2.0 Object Library"
+3. Click "OK" to save changes
+
+### Step 3: Create a User Form
+1. In the VBA editor, create a new user form
+2. Add a Label control that will serve as the slider track
+3. Add a class variable to the form:
+```vba
+Dim Slider As clsSlider
+```
 
 ## Quick Start
 
-To use the slider in your UserForm:
-
-1. Create an instance of the clsSlider class
-2. Initialize it with your UserForm and desired parameters
-3. Set properties like min/max values, step size, and appearance
-4. Handle the ValueChanged event to respond to user interactions
-
-See the `frmTestClass` form for a complete example implementation.
-
 ### Simple Usage Example
+1. Create a new user form in Excel
+2. Add a Label control to serve as the slider track
+3. In the `UserForm_Initialize` event, add the following code:
 ```vba
-' In the form module
-Dim Slider As clsSlider
-
 Private Sub UserForm_Initialize()
-    ' Create an instance of the slider class
     Set Slider = New clsSlider
-    
-    ' Initialize the slider with default parameters
     Call Slider.Initialize(Me.Label1, 50, 0, 100, True)
+End Sub
+```
+4. Run the form to see the slider control
+
+### Example with Color Configuration
+```vba
+Private Sub UserForm_Initialize()
+    Set Slider = New clsSlider
+    Call Slider.Initialize(Me.Label1, 50, 0, 100, True, , , RGB(200, 200, 200), RGB(0, 100, 200), RGB(0, 0, 0), RGB(0, 0, 0))
 End Sub
 ```
 
@@ -222,7 +214,7 @@ End With
 - "Method or data member not found" - check that the class is properly imported
 - "Can't assign to property" - avoid direct assignment to nested objects without checking for Nothing
 
-## FAQ
+## Frequently Asked Questions
 
 ### Question: How to change colors after initialization?
 **Answer:** Use the properties of the slider instance to change colors after initialization.
@@ -244,7 +236,3 @@ End With
 
 ### Question: How to handle events of slider elements?
 **Answer:** The class provides Click and value change events that can be handled in the form module.
-
-## License
-
-This project is licensed under the terms found in the LICENSE file.
