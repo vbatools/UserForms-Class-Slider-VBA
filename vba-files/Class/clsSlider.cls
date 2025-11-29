@@ -87,11 +87,11 @@ Public Property Get Version() As String
             "Description: Custom slider control for VBA UserForms with horizontal/vertical orientation support"
 End Property
 
-Public Property Get Step() As Single
-    Step = mStep
+Public Property Get StepSlider() As Single
+    StepSlider = mStep
 End Property
 
-Public Property Let Step(ByVal Value As Single)
+Public Property Let StepSlider(ByVal Value As Single)
 
     If Value = 0 Or (mMaxValue - mMinValue) < Value Then
         mStep = (mMaxValue - mMinValue) / mLabelLineEmpty.Width
@@ -314,7 +314,7 @@ Public Sub Initialize(ByRef labelSlider As MSForms.Label, _
         ByVal MinValue As Single, _
         ByVal MaxValue As Single, _
         ByVal VisibleLabelValue As Boolean, _
-        Optional Step As Single = 0, _
+        Optional StepSlider As Single = 0, _
         Optional FormatValue As String = vbNullString, _
         Optional PositionValue As PositionValue = Top, _
         Optional BackColorEmpty As XlRgbColor = rgbLightGray, _
@@ -360,11 +360,11 @@ Public Sub Initialize(ByRef labelSlider As MSForms.Label, _
     mPositionValue = PositionValue
     mTxtBtnColor = ForeColorBtn
 
-    If Step = 0 Or (mMaxValue - mMinValue) < Step Then
-        mStep = (mMaxValue - mMinValue) / mLabelLineEmpty.Width
-    Else
-        mStep = Step
-    End If
+    If StepSlider = 0 Or (mMaxValue - mMinValue) < StepSlider Then
+            mStep = (mMaxValue - mMinValue) / mLabelLineEmpty.Width
+        Else
+            mStep = StepSlider
+        End If
 
     With mLabelLineEmpty
         mIsHorizontal = .Width / .Height > 1
@@ -545,8 +545,33 @@ Private Sub mTxtBtn_MouseMove(ByVal Button As Integer, ByVal shift As Integer, B
 End Sub
 
 Private Sub hoverColor(ByVal shade As Byte)
-    mTxtBtn.ForeColor = mTxtBtnColor + shade
+    mTxtBtn.ForeColor = BlendColor(mTxtBtnColor, RGB(255, 255, 255), shade / 255)
 End Sub
+
+'Function to blend colors for hover effect
+Private Function BlendColor(ByVal color1 As Long, color2 As Long, factor As Double) As Long
+    Dim r1 As Byte, g1 As Byte, b1 As Byte
+    Dim r2 As Byte, g2 As Byte, b2 As Byte
+    Dim r As Byte, g As Byte, b As Byte
+    
+    ' Extract BGR components from the first color (VBA uses BGR format)
+    r1 = color1 Mod 256
+    g1 = (color1 \ 256) Mod 256
+    b1 = (color1 \ 6536) Mod 256
+    
+    ' Extract BGR components from the second color (VBA uses BGR format)
+    r2 = color2 Mod 256
+    g2 = (color2 \ 256) Mod 256
+    b2 = (color2 \ 65536) Mod 256
+    
+    ' Blend the colors
+    r = r1 + (r2 - r1) * factor
+    g = g1 + (g2 - g1) * factor
+    b = b1 + (b2 - b1) * factor
+    
+    ' Return the blended color
+    BlendColor = RGB(r, g, b)
+End Function
 
 ' Calculates the current slider value based on the slider position and value range
 ' Calculates the current slider value based on the position of the thumb and value range

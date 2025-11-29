@@ -15,11 +15,11 @@ Attribute VB_PredeclaredId = True
 Attribute VB_Exposed = False
 Option Explicit
 
-
 Private WithEvents clsSL As clsSlider
 Attribute clsSL.VB_VarHelpID = -1
 Private WithEvents clsSL2 As clsSlider
 Attribute clsSL2.VB_VarHelpID = -1
+
 
 Private Sub btnColor_Click()
     clsSL.ForeColorBtn = rgbOrange
@@ -89,7 +89,7 @@ End Sub
 
 Private Sub txtSetStep_Change()
     If Not IsNumeric(txtSetStep.Value) Then Exit Sub
-    clsSL.Step = txtSetStep.Value
+    clsSL.StepSlider = txtSetStep.Value
 End Sub
 
 Private Sub txtSetValue_Change()
@@ -112,7 +112,6 @@ Private Sub UserForm_Initialize()
         Call .Initialize(Label2, 0.5, 0, 1, True, 0.1, "##%", PositionValue.Right)
     End With
     
-    txtSetStep.Value = clsSL.Step
+    txtSetStep.Value = clsSL.StepSlider
     lbVersion.Caption = clsSL.Version
 End Sub
-
