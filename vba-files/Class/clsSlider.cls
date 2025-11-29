@@ -1,7 +1,7 @@
 VERSION 1.0 CLASS
 BEGIN
-  MultiUse = -1  'True
-END
+ MultiUse = -1  'True
+  END
 Attribute VB_Name = "clsSlider"
 Attribute VB_GlobalNameSpace = False
 Attribute VB_Creatable = False
@@ -12,9 +12,9 @@ Option Explicit
 '========================================================================================
 ' Class: clsSlider
 ' Author: VBATools
-' Version: 1.0.2
+' Version: 1.0.3
 ' Creation Date: 13.11.2025 10:59
-' Last Update Date: 29.11.2025 11:47
+' Last Update Date: 29.11.2025 14:00
 ' License: Apache License
 '
 ' Description:
@@ -62,27 +62,27 @@ Private mLabelValue As MSForms.Label
 Public Event DblClick(ByRef control As Object, ByRef Value As Single)
 Public Event Change(ByRef control As Object, ByRef Value As Single)
 
-Private mNameLabel  As String      ' Name of the main slider label
-Private mFormatValue As String     ' Format for displaying the value
-Private mValue      As Single      ' Current slider value
-Private mMaxValue   As Single      ' Maximum slider value
-Private mMinValue   As Single      ' Minimum slider value
-Private mSliderMinPos As Single    ' Minimum slider position
-Private mSliderMaxPos As Single    ' Maximum slider position
-Private mIsHorizontal As Boolean   ' Flag for horizontal orientation
-Private mLocked     As Boolean     ' Flag for locking the slider
+Private mNameLabel As String        ' Name of the main slider label
+Private mFormatValue As String      ' Format for displaying the value
+Private mValue As Single            ' Current slider value
+Private mMaxValue As Single         ' Maximum slider value
+Private mMinValue As Single         ' Minimum slider value
+Private mSliderMinPosition As Single    ' Minimum slider position
+Private mSliderMaxPosition As Single    ' Maximum slider position
+Private mIsHorizontal As Boolean    ' Flag for horizontal orientation
+Private mLocked As Boolean          ' Flag for locking the slider
 Private mPositionValue As PositionValue  ' Position of the value label
-Private mTxtBtnColor As XlRgbColor
-Private mStep       As Single
+Private mButtonColor As XlRgbColor
+Private mStep As Single
 
 Public Property Get Version() As String
     ' Returns version information about the class
     ' Example: Debug.Print slider.Version
     Version = "Class: clsSlider" & vbNewLine & _
             "Author: VBATools" & vbNewLine & _
-            "Version: 1.0.2" & vbNewLine & _
+            "Version: 1.0.3" & vbNewLine & _
             "Date of creation: 13.11.2025 10:59" & vbNewLine & _
-            "Date of update: 29.11.2025 11:47" & vbNewLine & _
+            "Date of update: 29.11.2025 14:00" & vbNewLine & _
             "License: Apache" & vbNewLine & _
             "Description: Custom slider control for VBA UserForms with horizontal/vertical orientation support"
 End Property
@@ -185,7 +185,7 @@ Public Property Let PositionLabelValue(ByVal Value As PositionValue)
     ' Accepts a value from the PositionValue enumeration (Top, Left, Right, Bottom)
     ' Example: slider.PositionLabelValue = clsSlider.PositionValue.Right
     mPositionValue = Value
-    Call changePositionLabelValue(mPositionValue)
+    Call UpdateValueLabelPosition(mPositionValue)
 End Property
 
 Public Property Get FormatValue() As String
@@ -229,7 +229,7 @@ Public Property Let ForeColorBtn(ByVal Value As XlRgbColor)
     ' Sets the text color of the slider button
     ' Example: slider.ForeColorBtn = rgbBlue
     mTxtBtn.ForeColor = Value
-    mTxtBtnColor = Value
+    mButtonColor = Value
 End Property
 
 Public Property Get BackColorFull() As XlRgbColor
@@ -358,7 +358,7 @@ Public Sub Initialize(ByRef labelSlider As MSForms.Label, _
     mMinValue = MinValue
     mFormatValue = FormatValue
     mPositionValue = PositionValue
-    mTxtBtnColor = ForeColorBtn
+    mButtonColor = ForeColorBtn
 
     If StepSlider = 0 Or (mMaxValue - mMinValue) < StepSlider Then
             mStep = (mMaxValue - mMinValue) / mLabelLineEmpty.Width
@@ -370,12 +370,12 @@ Public Sub Initialize(ByRef labelSlider As MSForms.Label, _
         mIsHorizontal = .Width / .Height > 1
         If mIsHorizontal Then
             .Height = 3
-            mSliderMinPos = .Left
-            mSliderMaxPos = mSliderMinPos + .Width
+            mSliderMinPosition = .Left
+            mSliderMaxPosition = mSliderMinPosition + .Width
         Else
             .Width = 3
-            mSliderMinPos = .Top
-            mSliderMaxPos = mSliderMinPos + .Height
+            mSliderMinPosition = .Top
+            mSliderMaxPosition = mSliderMinPosition + .Height
         End If
         .Caption = vbNullString
         mNameLabel = .Name
@@ -426,12 +426,12 @@ Private Sub mTxtBtn_KeyDown(ByVal KeyCode As MSForms.ReturnInteger, ByVal shift 
     If mIsHorizontal Then
         Select Case KeyCode
             Case 37, 65
-                Call hoverColor(100)
+                Call ApplyHoverEffect(100)
                 sShift = mValue - mStep
                 If sShift < mMinValue Then sShift = mMinValue
                 Me.Value = sShift
             Case 39, 68
-                Call hoverColor(100)
+                Call ApplyHoverEffect(100)
                 sShift = mValue + mStep
                 If sShift > mMaxValue Then sShift = mMaxValue
                 Me.Value = sShift
@@ -439,13 +439,13 @@ Private Sub mTxtBtn_KeyDown(ByVal KeyCode As MSForms.ReturnInteger, ByVal shift 
     Else
         Select Case KeyCode
             Case 38, 87
-                Call hoverColor(100)
+                Call ApplyHoverEffect(100)
                 KeyCode = 87
                 sShift = mValue - mStep
                 If sShift < mMinValue Then sShift = mMinValue
                 Me.Value = sShift
             Case 40, 83
-                Call hoverColor(100)
+                Call ApplyHoverEffect(100)
                 KeyCode = 83
                 sShift = mValue + mStep
                 If sShift > mMaxValue Then sShift = mMaxValue
@@ -485,7 +485,7 @@ Private Sub mTxtBtn_MouseUp(ByVal Button As Integer, ByVal shift As Integer, ByV
 End Sub
 
 Private Sub mParent_MouseMove(ByVal Button As Integer, ByVal shift As Integer, ByVal X As Single, ByVal Y As Single)
-    Call hoverColor(0)
+    Call ApplyHoverEffect(0)
 End Sub
 
 ' MouseMove event handler for the slider
@@ -497,17 +497,17 @@ End Sub
 '     Debug.Print "Value changed: " & Value
 ' End Sub
 Private Sub mTxtBtn_MouseMove(ByVal Button As Integer, ByVal shift As Integer, ByVal X As Single, ByVal Y As Single)
-    Call hoverColor(100)
+    Call ApplyHoverEffect(100)
     If Button <> 1 Or mLocked Then Exit Sub
     With mTxtBtn
         If mIsHorizontal Then
             Select Case .Left + X
-                Case mSliderMinPos To mSliderMaxPos - 5:
+                Case mSliderMinPosition To mSliderMaxPosition - 5:
                     .Left = .Left + X
                     Select Case mTxtBtn.Left + X
-                        Case Is < mSliderMinPos
+                        Case Is < mSliderMinPosition
                             mLabelLineFull.Width = 0
-                        Case Is > mSliderMaxPos
+                        Case Is > mSliderMaxPosition
                             mLabelLineFull.Width = mLabelLineEmpty.Width
                         Case Else
                             If mLabelLineFull.Width + X < 0 Then
@@ -519,12 +519,12 @@ Private Sub mTxtBtn_MouseMove(ByVal Button As Integer, ByVal shift As Integer, B
             End Select
         Else
             Select Case .Top + Y
-                Case mSliderMinPos To mSliderMaxPos - 5:
+                Case mSliderMinPosition To mSliderMaxPosition - 5:
                     .Top = .Top + Y
                     Select Case mTxtBtn.Top + Y
-                        Case Is < mSliderMinPos
+                        Case Is < mSliderMinPosition
                             mLabelLineFull.Height = 0
-                        Case Is > mSliderMaxPos
+                        Case Is > mSliderMaxPosition
                             mLabelLineFull.Height = mLabelLineEmpty.Height
                         Case Else
                             If mLabelLineFull.Height + Y < 0 Then
@@ -544,22 +544,29 @@ Private Sub mTxtBtn_MouseMove(ByVal Button As Integer, ByVal shift As Integer, B
     RaiseEvent Change(mTxtBtn, mValue)
 End Sub
 
-Private Sub hoverColor(ByVal shade As Byte)
-    mTxtBtn.ForeColor = BlendColor(mTxtBtnColor, RGB(255, 255, 255), shade / 255)
+' Applies a hover effect to the slider button by adjusting its color
+' The shade parameter determines the intensity of the effect (0-255)
+Private Sub ApplyHoverEffect(ByVal shade As Byte)
+    mTxtBtn.ForeColor = BlendColor(mButtonColor, RGB(255, 255, 255), shade / 255)
 End Sub
 
-'Function to blend colors for hover effect
+' Function to blend two colors based on a factor
+' This function is used to create the hover effect on the slider button
+' Parameters:
+' - color1: the base color to start from
+' - color2: the target color to blend towards
+' - factor: the blending factor (0.0 to 1.0), where 0.0 is color1 and 1.0 is color2
 Private Function BlendColor(ByVal color1 As Long, color2 As Long, factor As Double) As Long
     Dim r1 As Byte, g1 As Byte, b1 As Byte
     Dim r2 As Byte, g2 As Byte, b2 As Byte
     Dim r As Byte, g As Byte, b As Byte
     
-    ' Extract BGR components from the first color (VBA uses BGR format)
+    ' Extract RGB components from the first color (VBA uses BGR format)
     r1 = color1 Mod 256
     g1 = (color1 \ 256) Mod 256
-    b1 = (color1 \ 6536) Mod 256
+    b1 = (color1 \ 65536) Mod 256
     
-    ' Extract BGR components from the second color (VBA uses BGR format)
+    ' Extract RGB components from the second color (VBA uses BGR format)
     r2 = color2 Mod 256
     g2 = (color2 \ 256) Mod 256
     b2 = (color2 \ 65536) Mod 256
@@ -585,19 +592,27 @@ Private Function getValue() As Single
         Exit Function
     End If
 
+    Dim positionRatio As Double
     If mIsHorizontal Then
-        getValue = mMinValue + mLabelLineFull.Width / mLabelLineEmpty.Width * (mMaxValue - mMinValue)
+        positionRatio = mLabelLineFull.Width / mLabelLineEmpty.Width
     Else
-        getValue = mMinValue + mLabelLineFull.Height / mLabelLineEmpty.Height * (mMaxValue - mMinValue)
+        positionRatio = mLabelLineFull.Height / mLabelLineEmpty.Height
     End If
 
-    getValue = getValue - mMinValue
-    If (getValue - Fix(getValue / mStep) * mStep) / mStep > 0.5 Then
-        getValue = mMinValue + Fix(getValue / mStep) * mStep + mStep
+    ' Calculate the raw value based on position ratio
+    Dim rawValue As Double
+    rawValue = mMinValue + positionRatio * (mMaxValue - mMinValue)
+
+    ' Apply step increment to the value
+    Dim stepValue As Double
+    stepValue = (rawValue - mMinValue) / mStep
+    If (stepValue - Fix(stepValue))  > 0.5 Then
+        getValue = mMinValue + Fix(stepValue) * mStep + mStep
     Else
-        getValue = mMinValue + Fix(getValue / mStep) * mStep
+        getValue = mMinValue + Fix(stepValue) * mStep
     End If
 
+    ' Ensure the value is within bounds
     If getValue > mMaxValue Then
         getValue = mMaxValue
     ElseIf getValue < mMinValue Then
@@ -614,6 +629,13 @@ End Function
 ' Example usage: Call slider.SetValue(75)
 Private Sub SetValue(ByRef snValue As Single)
     mValue = snValue
+    Call UpdateSliderLinePosition
+    Call UpdateButtonPosition
+    Call UpdateValueLabelDisplay
+End Sub
+
+' Updates the position and size of the slider line based on the current value
+Private Sub UpdateSliderLinePosition()
     With mLabelLineFull
         If mIsHorizontal Then
             .Height = mLabelLineEmpty.Height
@@ -633,6 +655,10 @@ Private Sub SetValue(ByRef snValue As Single)
             .Width = mLabelLineEmpty.Width
         End If
     End With
+End Sub
+
+' Updates the position of the slider button based on the current value and orientation
+Private Sub UpdateButtonPosition()
     With mTxtBtn
         If mIsHorizontal Then
             .Top = mLabelLineEmpty.Top + mLabelLineEmpty.Height / 2 - .Height / 2 + 3
@@ -642,20 +668,52 @@ Private Sub SetValue(ByRef snValue As Single)
             .Left = mLabelLineEmpty.Left + mLabelLineEmpty.Width / 2 - .Width / 2 - 3
         End If
     End With
+End Sub
+
+' Updates the value label display with the current value and format
+Private Sub UpdateValueLabelDisplay()
     With mLabelValue
         .Height = 10
         .Width = 30
-        Call changePositionLabelValue(mPositionValue)
+        Call UpdateValueLabelPosition(mPositionValue)
         .Caption = mValue
         If mFormatValue <> vbNullString Then .Caption = VBA.Format$(mValue, mFormatValue)
     End With
 End Sub
 
+' Additional helper methods for improved maintainability
+' These methods separate concerns and make the code more modular
+
+' Validates that the minimum value is less than the maximum value
+Private Function IsValidRange() As Boolean
+    IsValidRange = (mMinValue < mMaxValue)
+End Function
+
+' Calculates the position ratio of the current value within the slider range
+Private Function CalculatePositionRatio() As Double
+    If mMaxValue <> mMinValue Then
+        CalculatePositionRatio = (mValue - mMinValue) / (mMaxValue - mMinValue)
+    Else
+        CalculatePositionRatio = 0
+    End If
+End Function
+
+' Ensures the given value is within the valid range
+Private Function ConstrainValue(ByVal inputValue As Single) As Single
+    If inputValue < mMinValue Then
+        ConstrainValue = mMinValue
+    ElseIf inputValue > mMaxValue Then
+        ConstrainValue = mMaxValue
+    Else
+        ConstrainValue = inputValue
+    End If
+End Function
+
 ' Changes the position of the slider value label depending on the given position
 ' Changes the position of the slider value label based on the specified position
 ' Accepts a value from the PositionValue enumeration and sets the appropriate label position
 ' Example usage: Call slider.changePositionLabelValue(clsSlider.PositionValue.Right)
-Private Sub changePositionLabelValue(ByVal pos As PositionValue)
+Private Sub UpdateValueLabelPosition(ByVal pos As PositionValue)
     With mLabelValue
         Select Case pos
             Case PositionValue.Top:
