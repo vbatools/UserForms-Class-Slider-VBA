@@ -3,8 +3,8 @@ Begin {C62A69F0-16DC-11CE-9E98-00AA00574A4F} frmTestClass
    Caption         =   "Test class:"
    ClientHeight    =   4425
    ClientLeft      =   120
-   ClientTop       =   465
-   ClientWidth     =   10425
+   ClientTop       =   468
+   ClientWidth     =   10428
    OleObjectBlob   =   "frmTestClass.frx":0000
    StartUpPosition =   1  'CenterOwner
 End
@@ -13,8 +13,8 @@ Attribute VB_GlobalNameSpace = False
 Attribute VB_Creatable = False
 Attribute VB_PredeclaredId = True
 Attribute VB_Exposed = False
-
 Option Explicit
+
 
 Private WithEvents clsSL As clsSlider
 Attribute clsSL.VB_VarHelpID = -1
@@ -48,7 +48,7 @@ Private Sub chbFormat_Click()
 End Sub
 
 Private Sub chbLocked_Click()
-   clsSL.Locked = Not clsSL.Locked
+    clsSL.Locked = Not clsSL.Locked
 End Sub
 
 Private Sub chbVisible_Click()
@@ -59,7 +59,7 @@ Private Sub chbEnabled_Click()
     clsSL.Enabled = Not clsSL.Enabled
 End Sub
 
-Private Sub clsSL_Click(control As Object, Value As Single)
+Private Sub clsSL_DblClick(control As Object, Value As Single)
     lbClick.Caption = "Click control: " & control.Name & vbNewLine & "Value: " & Value & vbNewLine & "Max: " & clsSL.MaxValue & vbNewLine & "Min: " & clsSL.MinValue
 End Sub
 
@@ -87,6 +87,11 @@ Private Sub optTOP_Click()
     clsSL.PositionLabelValue = PositionValue.Top
 End Sub
 
+Private Sub txtSetStep_Change()
+    If Not IsNumeric(txtSetStep.Value) Then Exit Sub
+    clsSL.Step = txtSetStep.Value
+End Sub
+
 Private Sub txtSetValue_Change()
     clsSL.Value = Val(txtSetValue.Value)
 End Sub
@@ -101,15 +106,13 @@ Private Sub UserForm_Initialize()
     Set clsSL = New clsSlider
     Set clsSL2 = New clsSlider
     With clsSL
-        Call .Initialize(Label1, 60, 50, 100, True, , PositionValue.Bottom)
+        Call .Initialize(Label1, 60, 50, 100, True, 5, , PositionValue.Bottom)
     End With
     With clsSL2
-        Call .Initialize(Label2, 0.5, 0, 1, True, "##%", PositionValue.Right)
+        Call .Initialize(Label2, 0.5, 0, 1, True, 0.1, "##%", PositionValue.Right)
     End With
-
+    
+    txtSetStep.Value = clsSL.Step
     lbVersion.Caption = clsSL.Version
 End Sub
-
-
-
 
