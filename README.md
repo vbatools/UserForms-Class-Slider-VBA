@@ -1,5 +1,7 @@
 # VBA Slider Class
 
+**English** | [Русский](README_RUS.md) | [UserForms-Class-ALL](https://github.com/vbatools/UserForms-Class-ALL/tree/main)
+
 ![Project Demo](User_Forms.gif)
 
 This repository contains a VBA implementation of a customizable slider control that can be used in Excel UserForms. The slider class provides a more flexible and feature-rich alternative to the standard scrollbar control.

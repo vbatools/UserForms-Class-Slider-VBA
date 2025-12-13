@@ -1,5 +1,7 @@
 # Класс VBA Slider
 
+**Русский** | [English](README.md) | [UserForms-Class-ALL](https://github.com/vbatools/UserForms-Class-ALL/blob/main/README_RUS.md)
+
 ![Демонстрация проекта](User_Forms.gif)
 
 Этот репозиторий содержит реализацию на VBA настраиваемого слайдер-контрола, который можно использовать в Excel UserForms. Класс слайдера предоставляет более гибкую и функциональную альтернативу стандартному элементу управления scrollbar.
